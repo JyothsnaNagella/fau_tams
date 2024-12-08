@@ -1,6 +1,16 @@
 const db = require('../config/db');
 
 const Instructor = {
+  getByCourseID: (id, callback) => {
+    db.query(
+      'SELECT * FROM instructor WHERE course_id = ?',
+      [id],
+      (err, result) => {
+        if (err) return callback(err, null);
+        callback(null, result);
+      }
+    );
+  },
   getAll: (callback) => {
     db.query('SELECT * FROM instructor', (err, results) => {
       if (err) return callback(err, null);

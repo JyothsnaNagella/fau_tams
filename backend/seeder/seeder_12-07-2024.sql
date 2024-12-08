@@ -38,13 +38,13 @@ INSERT INTO `applicant` (`id`, `firstname`, `lastname`, `Znumber`, `email`, `pas
     (4, 'Arnav', 'Reddy', 'Z23736090', 'arnav.reddy@fau.edu', '$2b$10$FtcnBRaGg47BfqgKBcHQz.9mc4o47260JzwwB4rkNTRDzbhGD7Sb2'),
     (5, 'Varnith', 'Dubbaka', 'Z23736091', 'varnith.dubbaka@fau.edu', '$2b$10$FtcnBRaGg47BfqgKBcHQz.9mc4o47260JzwwB4rkNTRDzbhGD7Sb2');
 
--- 6. Applications Table
-INSERT INTO `applications` (`id`, `applicant_id`, `firstname`, `lastname`, `email`, `Znumber`, `gpa`, `level_of_education`, `date_of_graduation`, `resume`, `previous_experience`, `course`, `duration`, `department_id`, `course_id`, `instructor_feedback_id`, `instructor_id`, `status`) VALUES
-    (1, 1, 'Jyothsna', 'Nagella', 'jyothsna.nagella@fau.edu', 'Z23736087', 3.8, 'Bachelors', '2025-05-15', 'resume.pdf', '2 years of experience in software development', 'Software Engineering', '2 semesters', 1, 1, NULL, 1, 'Pending'),
-    (2, 2, 'Sharanya', 'Yasa', 'sharanya.yasa@fau.edu', 'Z23736088', 3.7, 'Bachelors', '2025-05-15', 'resume.pdf', 'Internship in data analysis', 'Intro to Data Science', '1 semester', 2, 2, NULL, 2, 'Pending'),
-    (3, 3, 'Kailash', 'Adapa', 'kailash.adapa@fau.edu', 'Z23736089', 3.9, 'Bachelors', '2025-05-15', 'resume.pdf', '2 years in machine learning projects', 'Machine Learning', '1 semester', 3, 3, NULL, 3, 'Pending'),
-    (4, 4, 'Arnav', 'Reddy', 'arnav.reddy@fau.edu', 'Z23736090', 3.6, 'Bachelors', '2025-05-15', 'resume.pdf', 'Worked as an intern at AI company', 'Deep Learning', '2 semesters', 4, 4, NULL, 4, 'Pending'),
-    (5, 5, 'Varnith', 'Dubbaka', 'varnith.dubbaka@fau.edu', 'Z23736091', 3.5, 'Bachelors', '2025-05-15', 'resume.pdf', 'Worked on a research project in AI', 'Deep Learning', '1 semester', 5, 5, NULL, 5, 'Pending');
+-- 6. Applicantions Table
+INSERT INTO `applications` (`id`, `applicant_id`, `firstname`, `lastname`, `email`, `Znumber`, `gpa`, `level_of_education`, `date_of_graduation`, `resume`, `previous_experience`, `duration`, `department_id`, `course_id`, `instructor_feedback_id`, `instructor_id`, `status`) VALUES
+    (1, 1, 'Jyothsna', 'Nagella', 'jyothsna.nagella@fau.edu', 'Z23736087', 3.8, 'Bachelors', '2025-05-15', 'resume.pdf', '2 years of experience in software development', '2 semesters', 1, 1, NULL, 1, 'Pending'),
+    (2, 2, 'Sharanya', 'Yasa', 'sharanya.yasa@fau.edu', 'Z23736088', 3.7, 'Bachelors', '2025-05-15', 'resume.pdf', 'Internship in data analysis', '1 semester', 2, 2, NULL, 2, 'Pending'),
+    (3, 3, 'Kailash', 'Adapa', 'kailash.adapa@fau.edu', 'Z23736089', 3.9, 'Bachelors', '2025-05-15', 'resume.pdf', '2 years in machine learning projects', '1 semester', 3, 3, NULL, 3, 'Pending'),
+    (4, 4, 'Arnav', 'Reddy', 'arnav.reddy@fau.edu', 'Z23736090', 3.6, 'Bachelors', '2025-05-15', 'resume.pdf', 'Worked as an intern at AI company', '2 semesters', 4, 4, NULL, 4, 'Pending'),
+    (5, 5, 'Varnith', 'Dubbaka', 'varnith.dubbaka@fau.edu', 'Z23736091', 3.5, 'Bachelors', '2025-05-15', 'resume.pdf', 'Worked on a research project in AI', '1 semester', 5, 5, NULL, 5, 'Pending');
 
 -- 7. Instructor Feedback Table
 INSERT INTO `instructor_feedback` (`id`, `course_id`, `instructor_name`, `performance_rating`, `ta_id`, `feedback`, `instructor_id`) VALUES

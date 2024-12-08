@@ -1,12 +1,21 @@
 # BACKLOG
-* Style login page (using tailwind) ensure all the components i add are also styled as well
-* Need a logout btn on the dashboard
-* Style dashboard
-* Form validation for login page enforce required fields
-* add placeholder to the user type field it is required so error if not selected
+* Update the sql table to remove course from the applications table
+* You need to add the missing input fields in applicant form
+* gpa                    
+level_of_education     
+date_of_graduation  
+previous_experience                
+duration  # duration of previous experience            
+department_id  
+----+-------------------------+
+|  1 | Computer Science        |
+|  2 | Data Science            |
+|  3 | Artificial Intelligence |
+|  4 | Electrical Engineering  |
+|  5 | Mechanical Engineering  |
 
--- 
 
+--
 * All the user type workflows 
     * Applicants - This user type will need to upload a file
         * Applicant form -> form fields, ability to upload a file

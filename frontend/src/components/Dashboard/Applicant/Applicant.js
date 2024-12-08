@@ -1,16 +1,17 @@
-/**
- * @TODO Course dates came across as null need to finish implementing
- * @TODO Need to get the applicant id (user id creating the app)
- * @TODO Implement verifyToken
- */
 import React, { useState } from "react";
-import axiosInstance from '../../../api/axios';
+import axiosInstance from "../../../api/axios";
 
 const Applicant = () => {
   const [isPrevTA, setIsPrevTA] = useState(false);
   const [coursesDates, setCoursesDates] = useState([]);
   const [qualifiedCourses, setQualifiedCourses] = useState(-1);
   const [cvFile, setCVFile] = useState(null);  // Track the selected CV file
+  const [gpa, setGpa] = useState(""); // GPA state
+  const [levelOfEducation, setLevelOfEducation] = useState(""); // Level of Education state
+  const [graduationDate, setGraduationDate] = useState(""); // Graduation Date state
+  const [previousExperience, setPreviousExperience] = useState(""); // Previous Experience state
+  const [duration, setDuration] = useState(""); // Duration state
+  const [department, setDepartment] = useState(""); // Department  state
 
   // Course options based on your data
   const courses = [
@@ -43,11 +44,17 @@ const Applicant = () => {
       prevTA: isPrevTA,
       coursesDates: isPrevTA ? coursesDates : null,
       qualifiedCourses,
+      gpa,
+      levelOfEducation,
+      graduationDate,
       cv: cvFile,
-    }
+      previousExperience,
+      duration,
+      department,
+    };
+
     try {
       // Send the form data to the backend
-      // @TODO We need to get the applicant id (user id creating the app)
       const response = await axiosInstance.post('/applicant/1/apply', data, {
         headers: {
           "Content-Type": "multipart/form-data",  // This is important for file uploads
@@ -66,6 +73,59 @@ const Applicant = () => {
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">TA Application Form</h2>
       <form onSubmit={handleFormSubmit} className="space-y-6 text-left">
+        {/* GPA */}
+        <div className="flex flex-col">
+          <label htmlFor="gpa" className="text-gray-700 font-medium mb-2">
+            GPA
+          </label>
+          <input
+            type="text"
+            id="gpa"
+            name="gpa"
+            value={gpa}
+            onChange={(e) => setGpa(e.target.value)} // Update GPA state
+            className="border rounded-lg p-2 text-gray-600"
+            placeholder="Enter your GPA"
+            required
+          />
+        </div>
+
+        {/* Level of Education */}
+        <div className="flex flex-col">
+          <label htmlFor="levelOfEducation" className="text-gray-700 font-medium mb-2">
+            Level of Education
+          </label>
+          <select
+            id="levelOfEducation"
+            name="levelOfEducation"
+            value={levelOfEducation}
+            onChange={(e) => setLevelOfEducation(e.target.value)} // Update Level of Education state
+            className="border rounded-lg p-2 text-gray-600"
+            required
+          >
+            <option value="">Select Level</option>
+            <option value="Bachelors">Bachelors</option>
+            <option value="Graduate">Graduate</option>
+            <option value="Post Graduate">Post Graduate</option>
+          </select>
+        </div>
+
+        {/* Graduation Date */}
+        <div className="flex flex-col">
+          <label htmlFor="graduationDate" className="text-gray-700 font-medium mb-2">
+            Date of Graduation
+          </label>
+          <input
+            type="date"
+            id="graduationDate"
+            name="graduationDate"
+            value={graduationDate}
+            onChange={(e) => setGraduationDate(e.target.value)} // Update Graduation Date state
+            className="border rounded-lg p-2 text-gray-600"
+            required
+          />
+        </div>
+
         {/* CV Upload */}
         <div className="flex flex-col">
           <label htmlFor="cv" className="text-gray-700 font-medium mb-2">
@@ -112,7 +172,7 @@ const Applicant = () => {
           </div>
         </div>
 
-        {/* Relevant Course(s) and Dates */}
+        {/* Relevant Course(s) and Dates - Show this only if "Yes" */}
         {isPrevTA && (
           <div className="flex flex-col">
             <label htmlFor="coursesDates" className="text-gray-700 font-medium mb-2">
@@ -126,8 +186,64 @@ const Applicant = () => {
               rows="4"
               onChange={(e) => setCoursesDates(e.target.value)}  // Update the courses dates
             ></textarea>
+            {/* Previous Experience */}
+            <div className="flex flex-col">
+            <label htmlFor="previousExperience" className="text-gray-700 font-medium mb-2">
+                Previous Experience
+            </label>
+            <input
+                type="text"
+                id="previousExperience"
+                name="previousExperience"
+                value={previousExperience}
+                onChange={(e) => setPreviousExperience(e.target.value)} // Update Previous Experience state
+                className="border rounded-lg p-2 text-gray-600"
+                placeholder="Enter your previous experience"
+                required
+            />
+            </div>
+             {/* Duration */}
+        <div className="flex flex-col">
+          <label htmlFor="duration" className="text-gray-700 font-medium mb-2">
+            Duration
+          </label>
+          <input
+            type="text"
+            id="duration"
+            name="duration"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)} // Update Duration state
+            className="border rounded-lg p-2 text-gray-600"
+            placeholder="Enter duration of previous experience"
+            required
+          />
+        </div>
+
+
           </div>
         )}
+      {/* Department */}
+<div className="flex flex-col">
+  <label htmlFor="department" className="text-gray-700 font-medium mb-2">
+    Department 
+  </label>
+  <select
+    id="department"
+    name="department"
+    value={department}
+    onChange={(e) => setDepartment(e.target.value)} // Update Department  state
+    className="border rounded-lg p-2 text-gray-600"
+    required
+  >
+    <option value="">Select Department</option>
+    <option value="1">Computer Science</option>
+    <option value="2">Data Science</option>
+    <option value="3">Artificial Intelligence</option>
+    <option value="4">Electrical Engineering</option>
+    <option value="5">Mechanical Engineering</option>
+  </select>
+</div>
+
 
         {/* Courses Qualified to Assist With */}
         <div className="flex flex-col">

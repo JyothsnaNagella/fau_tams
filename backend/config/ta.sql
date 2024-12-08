@@ -84,7 +84,6 @@ CREATE TABLE `applications` (
   `date_of_graduation` DATE,
   `resume` TEXT,
   `previous_experience` TEXT,
-  `course` VARCHAR(100),
   `duration` VARCHAR(50),
   `department_id` INT NOT NULL,
   `course_id` INT NOT NULL,

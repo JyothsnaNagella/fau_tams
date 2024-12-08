@@ -16,7 +16,24 @@ const application = {
   },
 
   create: (applicationData, callback) => {
-    const { applicant_id, firstname, lastname, email, znumber, gpa, level_of_education, date_of_graduation, resume, previous_experience, course, duration, department_id, course_id, status } = applicationData;
+    const { 
+      applicant_id, 
+      firstname, 
+      lastname, 
+      email, 
+      znumber, 
+      gpa, 
+      level_of_education, 
+      date_of_graduation, 
+      resume, 
+      previous_experience, 
+      duration, 
+      instructor_id,
+      department_id, 
+      course_id, 
+      status } = applicationData;
+
+      console.log(applicationData);
     
     // Step 1: Check if applicant exists
     db.query('SELECT * FROM applicant WHERE id = ?', [applicant_id], (err, result) => {
@@ -28,13 +45,17 @@ const application = {
 
       // Step 2: Create the application if the applicant exists
       db.query(
-        'INSERT INTO applications (applicant_id, firstname, lastname, email, Znumber, gpa, level_of_education, date_of_graduation, resume, previous_experience, course, duration, department_id, course_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [applicant_id, firstname, lastname, email, znumber, gpa, level_of_education, date_of_graduation, resume, previous_experience, course, duration, department_id, course_id, status],
+        'INSERT INTO applications (applicant_id, firstname, lastname, email, znumber, gpa, level_of_education, date_of_graduation, resume, previous_experience, duration, instructor_id, department_id, course_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [applicant_id, firstname, lastname, email, znumber, gpa, level_of_education, date_of_graduation, resume, previous_experience, duration, instructor_id, department_id, course_id, status],
         (err, result) => {
-          if (err) return callback(err, null);
+          if (err) {
+            console.error("Database query error:", err);  // Log the error
+            return callback(err, null);
+          }
           callback(null, result);
         }
       );
+      
     });
   },
 
