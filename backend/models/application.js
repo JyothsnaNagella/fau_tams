@@ -7,6 +7,32 @@ const application = {
       callback(null, results);
     });
   },
+  getResumePath: (applicationId, callback) => {
+    db.query('SELECT resume FROM applications WHERE id = ?', [applicationId], (err, result) => {
+      if (err) return callback(err, null);
+      callback(null, result);
+    });
+  },
+  recommendApplication: (applicationId, callback) => {
+    db.query('UPDATE applications SET status = ? WHERE id = ?', ['Recommended', applicationId], (err, result) => {
+      if (err) return callback(err, null);
+      callback(null, result);
+    }); 
+  },
+
+  rejectApplication: (applicationId, callback) => {
+    db.query('UPDATE applications SET status = ? WHERE id = ?', ['Rejected', applicationId], (err, result) => {
+      if (err) return callback(err, null);
+      callback(null, result);
+    });   
+  },
+
+  getAllPending(callback) {
+    db.query('SELECT * FROM applications WHERE status = ?', ['Pending'], (err, results) => {
+      if (err) return callback(err, null);
+      callback(null, results);
+    });
+  },
 
   getById: (id, callback) => {
     db.query('SELECT * FROM applications WHERE id = ?', [id], (err, result) => {

@@ -1,6 +1,13 @@
 const db = require('../config/db');
 
 const committee = {
+  getByEmail: (email, callback) => {
+    db.query('SELECT * FROM committee WHERE email = ?', [email], (err, result) => {
+        if (err) return callback(err, null);
+        callback(null, result[0]); // Assuming email is unique
+    });
+},
+
   getAll: (callback) => {
     db.query('SELECT * FROM committee', (err, results) => {
       if (err) return callback(err, null);
