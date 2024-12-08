@@ -10,8 +10,9 @@ const Login = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('jwtToken');
+
     if (token) {
-      window.location.href = '/dashboard'; // Redirect to dashboard if already logged in
+      //window.location.href = '/dashboard'; // Redirect to dashboard if already logged in
     }
   }, []);
 
@@ -27,9 +28,10 @@ const Login = () => {
         userType,
       });
 
-      const { token } = response.data; // Extract token from response
+      const { token, user } = response.data; // Extract token from response
       localStorage.setItem('jwtToken', token); // Store token in localStorage
       localStorage.setItem('userType', userType);
+      localStorage.setItem('userId', user.id);
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => {
         window.location.href = '/dashboard'; // Redirect to dashboard

@@ -15,6 +15,19 @@ const instructor = {
     });
   },
 
+  getByCourseID: (courseID, callback) => {
+    db.query('SELECT * FROM instructor WHERE course_id = ?', [courseID], (err, result) => {
+      if (err) {
+        console.error('Error fetching instructor by course ID:', err);
+        return callback(err, null);
+      }
+      if (result.length === 0) {
+        return callback(new Error('Instructor not found'), null);
+      }
+      callback(null, result[0]);
+    })
+  },
+
   // Get all instructors
   getAll: (callback) => {
     db.query('SELECT * FROM instructor', (err, results) => {

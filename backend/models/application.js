@@ -1,6 +1,12 @@
 const db = require('../config/db');
 
 const application = {
+  getApplicationsByApplicantId: (applicantId, callback) => {
+    db.query('SELECT * FROM applications WHERE applicant_id = ?', [applicantId], (err, results) => {
+      if (err) return callback(err, null);
+      callback(null, results);
+    }); 
+  },
   approveApplication: (applicationId, callback) => {
     db.query('UPDATE applications SET status = ? WHERE id = ?', ['Accepted', applicationId], (err, result) => {
       

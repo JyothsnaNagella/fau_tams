@@ -4,6 +4,7 @@ const verifyToken = require('../middleware/verifyToken');
 const Applicant = require('../models/applicant');
 const Application = require('../models/application');
 const Instructor = require('../models/instructor');
+const Course = require('../models/course');
 const router = express.Router();
 
 // Configure multer for file uploads
@@ -42,7 +43,7 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
       if (err) return res.status(500).send('Error getting instructor');
       if (!result) return res.status(404).send('Instructor not found');
       
-      const instructor_id = result[0].id;
+      const instructor_id = result.id;
       console.log(instructor_id);
 
       // Form data to insert
@@ -61,13 +62,13 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
         date_of_graduation: graduationDate,
         duration: coursesDates,
         instructor_id, 
+        status: 'Pending',
         course_id: qualifiedCourses, // Array of course IDs
         resume: req.file ? req.file.path : null, // CV file path (uploaded file)
       };
 
       // Create the application
       Application.create(applicationData, (err, result) => {
-        console.log("Error add application record");
         if (err) return res.status(500).send('Error creating application');
         res.status(201).json({ message: 'Application submitted successfully', applicationId: result.insertId });
       });
@@ -76,6 +77,16 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
   })
 
 
+});
+
+
+router.get('/:id/applications', (req, res) => {
+  const { id } = req.params;
+  Application.getApplicationsByApplicantId(id, (err, result) => {
+    if (err) return res.status(500).send('Error getting applications');
+    if (!result) return res.status(404).send('Applications not found');
+    res.status(200).json(result);
+  });
 });
 
 module.exports = router;
