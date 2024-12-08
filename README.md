@@ -15,7 +15,7 @@ A robust system designed to streamline the management of graduate teaching assis
 Ensure you have the following installed on your system:
 - [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
-- Any required database (e.g., MongoDB).
+- MySQL
 
 ### Installation
 
@@ -47,6 +47,12 @@ Copy code
 ```
 npm run start
 ```
+
+### Database
+Build databse from ta.sql in backend/config/ta.sql
+Seed database with sample data from backend/seeder/seeder_12-07-2024.sql
+
+Configure backend/config/refresh.sql to easily rebuild and reseed db
 
 ### Author
 Jyothsna Nagella - 2024
