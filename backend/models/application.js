@@ -1,6 +1,22 @@
 const db = require('../config/db');
 
 const application = {
+  approveApplication: (applicationId, callback) => {
+    db.query('UPDATE applications SET status = ? WHERE id = ?', ['Accepted', applicationId], (err, result) => {
+      
+      if (err) {
+        console.error('Error approving application:', err);
+        return callback(err, null);
+      } 
+      callback(null, result);
+    });
+  },
+  getAllRecommended: (callback) => {
+    db.query('SELECT * FROM applications WHERE status = ?', ['Recommended'], (err, results) => {
+      if (err) return callback(err, null);
+      callback(null, results);
+    });
+  },
   getAll: (callback) => {
     db.query('SELECT * FROM applications', (err, results) => {
       if (err) return callback(err, null);

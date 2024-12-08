@@ -27,19 +27,6 @@ router.get('/resume/:id', (req, res) => {
         });
     })
 
-
-    /*
-
-    // Assume the file is named based on the applicant_id and is located in the "uploads" directory
-    const resumePath = path.join(__dirname, '..', 'uploads', `1733670029086-JyothsnaNagellaResume.pdf`);
-
-    // Check if the file exists
-    res.sendFile(resumePath, (err) => {
-        if (err) {
-            console.error('Error sending file:', err);
-            return res.status(404).send('Resume not found');
-        }
-    });*/
 });
 
 // Existing routes

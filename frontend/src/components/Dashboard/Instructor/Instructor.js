@@ -1,43 +1,120 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../../api/axios";
 
 const Instructor = () => {
-    return <div>
-                {/* Dashboard Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Total Applicants</h4>
-                <p className="text-4xl text-gray-800">120</p>
-            </div>
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Total Staff</h4>
-                <p className="text-4xl text-gray-800">45</p>
-            </div>
+  useEffect(() => {
+    axiosInstance
+      .get("/instructor/recommended")
+      .then((response) => {
+        console.log(response.data);
+        setApplications(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Error fetching recommended applications");
+        setLoading(false);
+      });
+  }, []);
 
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Total Committees</h4>
-                <p className="text-4xl text-gray-800">10</p>
-            </div>
-        </div>
+  const handleApprove = (id) => {
+    axiosInstance
+      .put(`/instructor/approve/${id}`)
+      .then(() => {
+        setApplications((prev) =>
+          prev.filter((application) => application.id !== id)
+        );
+      })
+      .catch((err) => {
+        console.error("Error approving application:", err);
+      });
+  };
 
-        {/* Quick Links */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Manage Applicants</h4>
-                <button className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Go to Applicants</button>
-            </div>
+  const handleReject = (id) => {
+    axiosInstance
+      .put(`/instructor/reject/${id}`)
+      .then(() => {
+        setApplications((prev) =>
+          prev.filter((application) => application.id !== id)
+        );
+      })
+      .catch((err) => {
+        console.error("Error rejecting application:", err);
+      });
+  };
 
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Manage Staff</h4>
-                <button className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Go to Staff</button>
-            </div>
+  if (loading) {
+    return <div className="text-center text-xl">Loading...</div>;
+  }
 
-            <div className="bg-white shadow-lg rounded-lg p-6 text-center">
-                <h4 className="text-xl font-semibold text-blue-500">Manage Committees</h4>
-                <button className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">Go to Committees</button>
-            </div>
-        </div>
-    </div>;
+  if (error) {
+    return <div className="text-center text-xl text-red-500">{error}</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-semibold text-center mb-6">Recommended Applications</h1>
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Name</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Email</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Z-Number</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">GPA</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Course</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Resume</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {applications.map((application) => (
+              <tr key={application.id} className="border-t">
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">
+                  {application.firstname} {application.lastname}
+                </td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.email}</td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.znumber}</td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.gpa}</td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.course}</td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">
+                {application.resume == 'resume.pdf' ? 'No resume uploaded' : 
+                        (
+                        <a 
+                            href={`${process.env.REACT_APP_API_BASE_URL}committee/resume/${application.id}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-700"
+                            >
+                            View Resume
+                        </a>
+                        )} 
+                   
+                </td>
+                <td className="py-3 px-4 text-center">
+                  <button
+                    onClick={() => handleApprove(application.id)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mr-2"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(application.id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 };
 
 export default Instructor;

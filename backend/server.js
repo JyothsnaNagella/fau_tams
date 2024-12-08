@@ -32,7 +32,7 @@ const registerRoute = require('./routes/register');
 const loginRoute = require('./routes/login');
 const protectedRoute = require('./routes/protectedroute');
 const committeeRoute = require('./routes/committee');
-
+const instructorRoute = require('./routes/instructor');
 
 // Use routes
 app.use('/applicant', applicantRoute);
@@ -40,6 +40,7 @@ app.use('/register', registerRoute);
 app.use('/login', loginRoute);
 app.use('/api/protected', protectedRoute);
 app.use('/committee', committeeRoute);
+app.use('/instructor', instructorRoute);
 
 // Start server
 const PORT = process.env.PORT || 5000;
