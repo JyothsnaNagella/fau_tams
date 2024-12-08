@@ -35,14 +35,12 @@ Ensure you have the following installed on your system:
 
 ### Backend
 Start the backend server:
-Copy code
 ```
 node server.js
 ```
 
 ### Frontend
 Start the frontend application:
-Copy code
 
 ```
 npm run start
