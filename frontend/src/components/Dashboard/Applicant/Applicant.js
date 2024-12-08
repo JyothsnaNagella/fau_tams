@@ -12,6 +12,7 @@ const Applicant = () => {
   const [previousExperience, setPreviousExperience] = useState(""); // Previous Experience state
   const [duration, setDuration] = useState(""); // Duration state
   const [department, setDepartment] = useState(""); // Department  state
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Course options based on your data
   const courses = [
@@ -63,6 +64,10 @@ const Applicant = () => {
 
       console.log("File uploaded successfully:", response.data);
       // Handle successful submission (e.g., show a success message)
+      if (response.status === 201) {
+        setFormSubmitted(true);
+      }
+
     } catch (error) {
       console.error("Error uploading file:", error);
       // Handle error (e.g., display an error message)
@@ -72,7 +77,10 @@ const Applicant = () => {
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">TA Application Form</h2>
-      <form onSubmit={handleFormSubmit} className="space-y-6 text-left">
+      {formSubmitted ? (
+        <p className="text-green-500">Form submitted successfully!</p>
+      ) : (
+        <form onSubmit={handleFormSubmit} className="space-y-6 text-left">
         {/* GPA */}
         <div className="flex flex-col">
           <label htmlFor="gpa" className="text-gray-700 font-medium mb-2">
@@ -275,6 +283,8 @@ const Applicant = () => {
           </button>
         </div>
       </form>
+        
+      )}
     </div>
   );
 };

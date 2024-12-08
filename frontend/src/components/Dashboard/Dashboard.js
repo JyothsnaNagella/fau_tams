@@ -12,11 +12,6 @@ const Dashboard = () => {
             {/* Main content area */}
             <main className="flex-grow py-6 px-4 sm:px-6 lg:px-8">
                 <div className="container mx-auto">
-                    {/* Dashboard Header */}
-                    <div className="mb-6">
-                        <h3 className="text-2xl font-semibold text-gray-800">Dashboard</h3>
-                    </div>
-
                     {/* Admin Section */}
                     {userType === 'applicant' && <Applicant/>}
                     {userType === 'committee' && <Committee />}
