@@ -42,10 +42,17 @@ router.put('/deny/:id', (req, res) => {
   });
 });
 
+router.get('/courses', (req, res) => {
+  Course.getAll((err, courses) => {
+    if (err) return res.status(500).send('Error fetching courses');
+    res.status(200).json(courses);
+  });
+});
+
 // Create application for an applicant
 router.post('/:id/apply', upload.single('cv'), (req, res) => {
   const { id } = req.params;
-  console.log(id);
+  console.log("Req params: ", req.params);
 
   // @TODO We need to first name, last name, znumber, email, and password from the user id
 
@@ -67,6 +74,7 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
       
       const instructor_id = result.id;
       console.log(instructor_id);
+      console.log("Applicant id: ", applicant);
 
       // Form data to insert
       const applicationData = {

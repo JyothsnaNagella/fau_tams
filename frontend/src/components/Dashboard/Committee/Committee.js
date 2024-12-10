@@ -9,14 +9,6 @@ const Committee = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
-  const courses = [
-    "Software Engineering",
-    "Intro to Data Science",
-    "Database Implementation",
-    "Machine Learning",
-    "Deep Learning",
-  ];
-
   useEffect(() => {
     axiosInstance
       .get("/committee")
@@ -39,6 +31,7 @@ const Committee = () => {
   const closeModal = (closeStatus) => {
       setIsModalOpen(false);
       if (closeStatus === "Recommended" || closeStatus === "Rejected") {
+        
         setApplications((prevApplications) =>
           prevApplications.map((app) =>
             app.applicant_id === selectedApplication.applicant_id
@@ -104,7 +97,7 @@ const Committee = () => {
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.znumber}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.gpa}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">
-                  {courses[application.course_id + 1]}
+                  {application.course_name}
                 </td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.status}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">

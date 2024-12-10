@@ -6,6 +6,7 @@ import axiosInstance from "../../../api/axios";
 const Applicant = () => {
   const [isPrevTA, setIsPrevTA] = useState(false);
   const [coursesDates, setCoursesDates] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [qualifiedCourses, setQualifiedCourses] = useState(-1);
   const [cvFile, setCVFile] = useState(null);  // Track the selected CV file
   const [gpa, setGpa] = useState(""); // GPA state
@@ -31,6 +32,16 @@ const Applicant = () => {
         });
     };
 
+    const fetchCourses = async () => {
+      await axiosInstance.get('/applicant/courses/').then((response) => {
+        console.log("Courses fetched successfully:", response.data);
+        setCourses(response.data);
+      }).catch((error) => {
+        console.error("Error fetching courses:", error);
+      });
+    };
+
+    fetchCourses();
     fetchApplications();
   }, []);
 
@@ -75,15 +86,17 @@ const Applicant = () => {
   };
 
   // Course options based on your data
+
+  /*
   const courses = [
     { id: 1, name: "Software Engineering", status: "Open" },
     { id: 2, name: "Intro to Data Science", status: "Open" },
     { id: 3, name: "Database Implementation", status: "Open" },
     { id: 4, name: "Machine Learning", status: "Open" },
     { id: 5, name: "Deep Learning", status: "Open" },
-  ];
+  ];*/
 
-  const openCourses = courses.filter((course) => course.status === "Open");
+  //const openCourses = courses.filter((course) => course.status === "Open");
 
   const handlePrevTAChange = (e) => {
     setIsPrevTA(e.target.value === "yes");
@@ -103,6 +116,7 @@ const Applicant = () => {
 
     const data = {
       prevTA: isPrevTA,
+      applicant_id: localStorage.getItem('userId'),
       coursesDates: isPrevTA ? coursesDates : null,
       qualifiedCourses,
       gpa,
@@ -116,7 +130,8 @@ const Applicant = () => {
 
     try {
       // Send the form data to the backend
-      const response = await axiosInstance.post('/applicant/1/apply', data, {
+      const userId = localStorage.getItem('userId');
+      const response = await axiosInstance.post('/applicant/' + userId + '/apply', data, {
         headers: {
           "Content-Type": "multipart/form-data",  // This is important for file uploads
         },
@@ -148,7 +163,7 @@ const Applicant = () => {
               <div className="mb-2">
                 <strong className="text-lg text-gray-800">Course:</strong>{" "}
                 <span className="text-gray-600">
-                  {courses.find(course => course.id === app.course_id)?.name}
+                  {courses.find(course => course.id === app.course_id)?.coursename}
                 </span>
               </div>
               <div className="mb-4">
@@ -382,9 +397,9 @@ const Applicant = () => {
               onChange={(e) => setQualifiedCourses(e.target.value)}
             >
               <option value="">Select Course</option>
-              {openCourses.map((course) => (
+              {courses.map((course) => (
                 <option key={course.id} value={course.id}>
-                  {course.name}
+                  {course.coursename}
                 </option>
               ))}
             </select>

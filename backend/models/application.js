@@ -21,10 +21,41 @@ const application = {
 
 
   getAllApproved: (callback) => {
-    db.query('SELECT * FROM applications WHERE status = ?', ['Accepted'], (err, results) => {
-      if (err) return callback(err, null);
-      callback(null, results);
-    }); 
+    // add join for course
+    const query = `
+        SELECT 
+            a.id, 
+            a.applicant_id, 
+            a.firstname, 
+            a.lastname, 
+            a.email, 
+            a.znumber, 
+            a.gpa, 
+            a.level_of_education, 
+            a.date_of_graduation, 
+            a.resume, 
+            a.previous_experience, 
+            a.duration, 
+            d.name AS department_name, 
+            c.coursename AS course_name, 
+            a.instructor_feedback_id, 
+            i.firstname AS instructor_firstname, 
+            i.lastname AS instructor_lastname,
+            a.instructor_id, 
+            a.status
+        FROM applications a
+        JOIN department d ON a.department_id = d.id
+        JOIN course c ON a.course_id = c.id
+        JOIN instructor i ON a.instructor_id = i.id
+        WHERE a.status = ?`;
+
+    db.query(query, ['Accepted'], (err, results) => {
+      if(err) {
+        console.error('Error fetching recommended applications:', err);
+        return callback(err, null);
+      }
+        callback(null, results);
+    });
 },
   acceptApplication: (applicationId, callback) => {
     db.query('UPDATE applications SET status = ? WHERE id = ?', ['Accepted', applicationId], (err, result) => {
@@ -120,10 +151,40 @@ const application = {
   },
 
   getAllPending(callback) {
-    db.query('SELECT * FROM applications WHERE status = ?', ['Pending'], (err, results) => {
-      if (err) return callback(err, null);
-      callback(null, results);
-    });
+    const query = `
+    SELECT 
+        a.id, 
+        a.applicant_id, 
+        a.firstname, 
+        a.lastname, 
+        a.email, 
+        a.znumber, 
+        a.gpa, 
+        a.level_of_education, 
+        a.date_of_graduation, 
+        a.resume, 
+        a.previous_experience, 
+        a.duration, 
+        d.name AS department_name, 
+        c.coursename AS course_name, 
+        a.instructor_feedback_id, 
+        i.firstname AS instructor_firstname, 
+        i.lastname AS instructor_lastname,
+        a.instructor_id, 
+        a.status
+    FROM applications a
+    JOIN department d ON a.department_id = d.id
+    JOIN course c ON a.course_id = c.id
+    JOIN instructor i ON a.instructor_id = i.id
+    WHERE a.status = ?`;
+
+db.query(query, ['Pending'], (err, results) => {
+  if(err) {
+    console.error('Error fetching recommended applications:', err);
+    return callback(err, null);
+  }
+    callback(null, results);
+});
   },
 
   getById: (id, callback) => {

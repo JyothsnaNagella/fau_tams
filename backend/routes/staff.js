@@ -30,6 +30,15 @@ router.post('/courses', (req, res) => {
   });
 });
 
+router.delete('/courses/:id', (req, res) => {
+  const courseId = req.params.id;
+
+  Course.delete(courseId, (err, result) => {
+    if (err) return res.status(500).send('Error deleting course');
+    res.status(200).json({ message: 'Course deleted successfully' });
+  });
+})
+
 // Get all courses that require TAs
 router.get('/courses', (req, res) => {
   Course.getAll((err, courses) => {

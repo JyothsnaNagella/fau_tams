@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../api/axios";
+import FeedbackModal from "../../FeedbackModal";
 
 const Instructor = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     axiosInstance
@@ -18,32 +21,18 @@ const Instructor = () => {
         setError("Error fetching recommended applications");
         setLoading(false);
       });
-  }, []);
+  }, []); 
 
-  const handleApprove = (id) => {
-    axiosInstance
-      .put(`/instructor/approve/${id}`)
-      .then(() => {
-        setApplications((prev) =>
-          prev.filter((application) => application.id !== id)
-        );
-      })
-      .catch((err) => {
-        console.error("Error approving application:", err);
-      });
-  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };  
 
-  const handleReject = (id) => {
-    axiosInstance
-      .put(`/instructor/reject/${id}`)
-      .then(() => {
-        setApplications((prev) =>
-          prev.filter((application) => application.id !== id)
-        );
-      })
-      .catch((err) => {
-        console.error("Error rejecting application:", err);
-      });
+
+  const handleReview = (application) => {    
+    console.log("test called with ID:", application);
+    setSelectedApplication(application); 
+    setIsModalOpen(true);
+     
   };
 
   if (loading) {
@@ -67,7 +56,8 @@ const Instructor = () => {
               <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">GPA</th>
               <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Course</th>
               <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Resume</th>
-              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Actions</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Status</th>
+              <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -79,9 +69,9 @@ const Instructor = () => {
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.email}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.znumber}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.gpa}</td>
-                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.course}</td>
+                <td className="py-3 px-4 text-sm text-gray-800 text-center">{application.course_name}</td>
                 <td className="py-3 px-4 text-sm text-gray-800 text-center">
-                {application.resume == 'resume.pdf' ? 'No resume uploaded' : 
+                {application.resume === 'resume.pdf' ? 'No resume uploaded' : 
                         (
                         <a 
                             href={`${process.env.REACT_APP_API_BASE_URL}committee/resume/${application.id}`} 
@@ -95,24 +85,28 @@ const Instructor = () => {
                    
                 </td>
                 <td className="py-3 px-4 text-center">
-                  <button
-                    onClick={() => handleApprove(application.id)}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mr-2"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(application.id)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  >
-                    Reject
-                  </button>
+                    {application.status}
+               </td>
+               <td className="py-3 px-4 text-center">
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={() => handleReview(application)}
+                    >
+                        Add Feedback
+                    </button>
                 </td>
               </tr>
             ))}
+          
           </tbody>
         </table>
+
       </div>
+                        {/* Modal */}
+                        {isModalOpen && (
+                    <FeedbackModal application={selectedApplication.id} onClose={closeModal} />
+                )}
+
     </div>
   );
 };

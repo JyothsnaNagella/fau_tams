@@ -16,7 +16,7 @@ const instructor = {
   },
 
   getByCourseID: (courseID, callback) => {
-    db.query('SELECT * FROM instructor WHERE course_id = ?', [courseID], (err, result) => {
+    db.query('SELECT * FROM instructor WHERE course_id = ?', [1], (err, result) => {
       if (err) {
         console.error('Error fetching instructor by course ID:', err);
         return callback(err, null);
