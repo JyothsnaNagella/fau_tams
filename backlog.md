@@ -1,4 +1,15 @@
 # BACKLOG
+* Done -> Add Recommended status tothe application table 
+
+* As a staff, I want to view the application from a modal - Make view appliction button open modal - display all the data in that  modal
+* Instructor should see approved applications only - Change this role to see approved status only
+* Staff should see recommended applications 
+* Instructor sample data applicants
+* Verified Token
+
+
+---------
+
 * Update the sql table to remove course from the applications table
 * You need to add the missing input fields in applicant form
 * gpa                    

@@ -1,5 +1,5 @@
 import React from "react";
-import Admin from './Admin';
+import Staff from './Staff';
 import Applicant from "./Applicant";
 import Committee from "./Committee";
 import Instructor from "./Instructor";
@@ -8,18 +8,15 @@ const Dashboard = () => {
     const userType = localStorage.getItem('userType');
     console.log(userType);
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col">
+        <div>
             {/* Main content area */}
             <main className="flex-grow py-6 px-4 sm:px-6 lg:px-8">
                 <div className="container mx-auto">
-                    {/* Admin Section */}
+                    {/* Staff Section */}
                     {userType === 'applicant' && <Applicant/>}
                     {userType === 'committee' && <Committee />}
                     {userType === 'instructor' && <Instructor />}
-                    {userType === 'admin' && <Admin />}
-
-
-                    
+                    {userType === 'staff' && <Staff />}
                 </div>
             </main>
         </div>

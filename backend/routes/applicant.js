@@ -12,6 +12,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './uploads'); // Directory where files will be stored
   },
+
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname); // Unique file name
   },
@@ -19,6 +20,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+router.put('/accept/:id', (req, res) => {
+  const applicationId = req.params.id;
+  Application.acceptApplication(applicationId, (err, result) => {
+    if (err) {
+      console.error('Error accepting application:', err);
+      return res.status(500).send('Error accepting application');
+    }
+    res.status(200).send('Application accepted successfully');
+  });
+}); 
+
+router.put('/deny/:id', (req, res) => {
+  const applicationId = req.params.id;
+  Application.denyApplication(applicationId, (err, result) => {
+    if (err) {
+      console.error('Error denying application:', err);
+      return res.status(500).send('Error denying application');
+    }
+    res.status(200).send('Application denied successfully');
+  });
+});
 
 // Create application for an applicant
 router.post('/:id/apply', upload.single('cv'), (req, res) => {

@@ -8,7 +8,7 @@ const Instructor = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/instructor/recommended")
+      .get("/instructor/approved")
       .then((response) => {
         console.log(response.data);
         setApplications(response.data);
@@ -56,7 +56,7 @@ const Instructor = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-semibold text-center mb-6">Recommended Applications</h1>
+      <h1 className="text-3xl font-semibold text-center mb-6">Approved Applications</h1>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full table-auto">
           <thead className="bg-gray-100">

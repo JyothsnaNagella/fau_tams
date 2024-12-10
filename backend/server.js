@@ -33,6 +33,7 @@ const loginRoute = require('./routes/login');
 const protectedRoute = require('./routes/protectedroute');
 const committeeRoute = require('./routes/committee');
 const instructorRoute = require('./routes/instructor');
+const staffRoute = require('./routes/staff');
 
 // Use routes
 app.use('/applicant', applicantRoute);
@@ -41,6 +42,7 @@ app.use('/login', loginRoute);
 app.use('/api/protected', protectedRoute);
 app.use('/committee', committeeRoute);
 app.use('/instructor', instructorRoute);
+app.use('/staff', staffRoute);
 
 // Start server
 const PORT = process.env.PORT || 5000;

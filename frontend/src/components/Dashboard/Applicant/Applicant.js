@@ -16,34 +16,63 @@ const Applicant = () => {
   const [department, setDepartment] = useState(""); // Department  state
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [createNewApplication, setCreateNewApplication] = useState(false);
-  const [applications, setApplications] = useState([
-    {
-      "id": 1,
-      "courseName": "Software Engineering",
-      "status": "Accepted"
-    },
-    {
-      "id": 2,
-      "courseName": "Intro to Data Science",
-      "status": "Pending"
-    }
-  ]);
+  const [applications, setApplications] = useState([]);
+  const [offerAnswered, setOfferAanswered] = useState(false);
 
+  // Fetch applications
   useEffect(() => {
     const fetchApplications = async () => {
       const userId = localStorage.getItem('userId');
-      try {
-        const response = await axiosInstance.get('/applicant/' + userId + '/applications');
-        
-        setApplications(response.data);
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-      }
+         await axiosInstance.get('/applicant/' + userId + '/applications').then((response) => {
+          console.log("Applications fetched successfully:", response.data);
+          setApplications(response.data);
+        }).catch((error) => {
+          console.error("Error fetching applications:", error);
+        });
     };
 
     fetchApplications();
   }, []);
 
+  const handleAccept = (id) => {
+    setOfferAanswered(true);
+    // Logic for accepting the offer, e.g., updating application status or sending request
+    console.log(`Accepted application with ID: ${id}`);
+
+      const response = axiosInstance.put(`/applicant/accept/${id}`).then(() => {
+        console.log("Application accepted successfully:", response.data);
+        console.log('applications: ', applications);
+        // Update status of this applications to Accepted
+        const updatedApplications = applications.map((application) => {
+          if (application.id === id) {
+            return { ...application, status: "Accepted" };
+          }
+          return application;
+        })
+        setApplications(updatedApplications);
+      }).catch((error) => {
+        console.error("Error accepting application:", error);
+      });
+ };
+
+  const handleDeny = (id) => {
+    setOfferAanswered(true);
+    // Logic for denying the offer, e.g., updating application status or sending request
+    console.log(`Denied application with ID: ${id}`);
+
+      const response = axiosInstance.put(`/applicant/deny/${id}`).then(() => {
+        console.log("Application denied successfully:", response.data);
+        const updatedApplications = applications.map((application) => {
+          if (application.id === id) {
+            return { ...application, status: "Denied" };
+          }
+          return application;
+        });
+        setApplications(updatedApplications);
+      }).catch((error) => {
+        console.error("Error denying application:", error);
+      });
+  };
 
   // Course options based on your data
   const courses = [
@@ -110,32 +139,57 @@ const Applicant = () => {
         <div className="mt-8">
         <h3 className="text-xl font-bold text-gray-800">Application Status</h3>
         {applications.length > 0 ? (
-          <ul className="mt-4">
-            {applications.map((app) => (
-              <li key={app.id} className="mb-4 border p-4 rounded-lg">
-                <p>
-                  <strong>Course:</strong> {courses.find(course => course.id ===  app.course_id)?.name}
-                </p>
-                <p>
-                  <strong>Status:</strong>{" "}
-                  <span
-                    className={
-                      app.status === "Accepted"
-                        ? "text-green-500"
-                        : app.status === "Pending"
-                        ? "text-yellow-500"
-                        : "text-red-500"
-                    }
-                  >
-                    {app.status}
-                  </span>
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No applications found.</p>
-        )}
+  <ul className="mt-4">
+    <div className="mt-8">
+      <div className="overflow-y-auto max-h-96">  {/* Enable scroll if content overflows */}
+        <ul>
+          {applications.map((app) => (
+            <li key={app.id} className="mb-4 p-4 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <div className="mb-2">
+                <strong className="text-lg text-gray-800">Course:</strong>{" "}
+                <span className="text-gray-600">
+                  {courses.find(course => course.id === app.course_id)?.name}
+                </span>
+              </div>
+              <div className="mb-4">
+                <strong className="text-lg text-gray-800">Status:</strong>{" "}
+                <span
+                  className={`
+                    ${app.status === "Accepted" ? "text-green-500" :
+                    app.status === "Pending" ? "text-yellow-500" :
+                    "text-red-500"}
+                  `}
+                >
+                  {app.status}
+                </span>
+              </div>
+              {!offerAnswered && app.status === 'Offer Pending' && (
+              <div className="flex justify-center space-x-4 mt-4"> {/* Align buttons to the right */}
+                <button
+                  className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors"
+                  onClick={() => handleAccept(app.id)}
+                >
+                  Accept Offer
+                </button>
+                <button
+                  className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={() => handleDeny(app.id)}
+                >
+                  Deny
+                </button>
+              </div>
+
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </ul>
+) : (
+  <p className="text-gray-600">No applications found.</p>
+)}
+
       </div>
       <h2 className="text-2xl font-bold mb-6 text-gray-800">TA Application Form</h2>
 

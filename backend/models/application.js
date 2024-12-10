@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { accept } = require('./instructor');
 
 const application = {
   getApplicationsByApplicantId: (applicantId, callback) => {
@@ -6,6 +7,33 @@ const application = {
       if (err) return callback(err, null);
       callback(null, results);
     }); 
+  },
+
+  setApplicationNotify: (applicationId, callback) => {
+    db.query('UPDATE applications SET has_been_notified = 1, status = ? WHERE id = ?', ['Offer Pending', applicationId], (err, result) => {
+      if (err) { 
+        console.error('Error handling notifications:', err);
+        return callback(err, null);
+      }
+      callback(null, result);
+    });
+  },
+
+
+  getAllApproved: (callback) => {
+    db.query('SELECT * FROM applications WHERE status = ?', ['Accepted'], (err, results) => {
+      if (err) return callback(err, null);
+      callback(null, results);
+    }); 
+},
+  acceptApplication: (applicationId, callback) => {
+    db.query('UPDATE applications SET status = ? WHERE id = ?', ['Accepted', applicationId], (err, result) => {
+      if (err) {
+        console.error('Error accepting application:', err);
+        return callback(err, null);
+      }
+      callback(null, result);
+    });
   },
   approveApplication: (applicationId, callback) => {
     db.query('UPDATE applications SET status = ? WHERE id = ?', ['Accepted', applicationId], (err, result) => {
@@ -17,12 +45,54 @@ const application = {
       callback(null, result);
     });
   },
+
+   denyApplication: (applicationId, callback) => {
+    db.query('UPDATE applications SET status = ? WHERE id = ?', ['Denied', applicationId], (err, result) => {
+      if (err) {
+        console.error('Error denying application:', err);
+        return callback(err, null);
+      }
+      callback(null, result);
+    });   
+   },
+
   getAllRecommended: (callback) => {
-    db.query('SELECT * FROM applications WHERE status = ?', ['Recommended'], (err, results) => {
-      if (err) return callback(err, null);
-      callback(null, results);
+    const query = `
+        SELECT 
+            a.id, 
+            a.applicant_id, 
+            a.firstname, 
+            a.lastname, 
+            a.email, 
+            a.znumber, 
+            a.gpa, 
+            a.level_of_education, 
+            a.date_of_graduation, 
+            a.resume, 
+            a.previous_experience, 
+            a.duration, 
+            d.name AS department_name, 
+            c.coursename AS course_name, 
+            a.instructor_feedback_id, 
+            i.firstname AS instructor_firstname, 
+            i.lastname AS instructor_lastname,
+            a.instructor_id, 
+            a.status
+        FROM applications a
+        JOIN department d ON a.department_id = d.id
+        JOIN course c ON a.course_id = c.id
+        JOIN instructor i ON a.instructor_id = i.id
+        WHERE a.status = ?`;
+
+    db.query(query, ['Recommended'], (err, results) => {
+      if(err) {
+        console.error('Error fetching recommended applications:', err);
+        return callback(err, null);
+      }
+        callback(null, results);
     });
-  },
+},
+
   getAll: (callback) => {
     db.query('SELECT * FROM applications', (err, results) => {
       if (err) return callback(err, null);
@@ -80,8 +150,6 @@ const application = {
       department_id, 
       course_id, 
       status } = applicationData;
-
-      console.log(applicationData);
     
     // Step 1: Check if applicant exists
     db.query('SELECT * FROM applicant WHERE id = ?', [applicant_id], (err, result) => {

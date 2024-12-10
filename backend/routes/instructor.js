@@ -25,6 +25,16 @@ router.put('/reject/:id', (req, res) => {
     });
 });
 
+router.get('/approved', (req, res) => {
+    Application.getAllApproved((err, result) => {
+        if (err) {
+            console.error('Error getting approved applications:', err);
+            return res.status(500).send('Error getting approved applications');
+        }
+        res.status(200).json(result);
+    })
+});
+
 // Get all recommended applications
 router.get('/recommended', (req, res) => {
     Application.getAllRecommended((err, result) => {

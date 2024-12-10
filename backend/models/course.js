@@ -21,7 +21,10 @@ const Course = {
       'INSERT INTO course (coursename, status, department_id, instructor_id) VALUES (?, ?, ?, ?)',
       [coursename, status, department_id, instructor_id],
       (err, result) => {
-        if (err) return callback(err, null);
+        if (err) {
+          console.log(err);
+          return callback(err, null);
+        }
         callback(null, result);
       }
     );

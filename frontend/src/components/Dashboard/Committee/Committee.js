@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../../api/axios";
+import ApplicationModal from "../../ApplicationModal";
 
 const Committee = () => {
   const [applications, setApplications] = useState([]);
+  const [selectedApplication, setSelectedApplication] = useState(null)
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
   const courses = [
@@ -27,6 +30,27 @@ const Committee = () => {
       });
   }, []);
 
+  
+  const openModal = (application) => {
+    setSelectedApplication(application);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = (closeStatus) => {
+      setIsModalOpen(false);
+      if (closeStatus === "Recommended" || closeStatus === "Rejected") {
+        setApplications((prevApplications) =>
+          prevApplications.map((app) =>
+            app.applicant_id === selectedApplication.applicant_id
+              ? { ...app, status: closeStatus }
+              : app
+          )
+        );
+      }
+      setSelectedApplication(null);
+  };
+
+
   const handleRecommend = (applicant_id) => {
     axiosInstance
       .put(`/committee/recommend/${applicant_id}`)
@@ -44,22 +68,6 @@ const Committee = () => {
       });
   };
 
-  const handleDeny = (applicant_id) => {
-    axiosInstance
-      .put(`/committee/deny/${applicant_id}`)
-      .then(() => {
-        setApplications((prevApplications) =>
-          prevApplications.map((app) =>
-            app.applicant_id === applicant_id
-              ? { ...app, status: "Denied" }
-              : app
-          )
-        );
-      })
-      .catch((err) => {
-        setError("Error denying application");
-      });
-  };
 
   if (loading) {
     return <div className="text-center text-xl">Loading...</div>;
@@ -116,16 +124,10 @@ const Committee = () => {
                 <td className="py-3 px-4 text-sm text-center">
                   <div className="flex justify-center space-x-2">
                     <button
-                      onClick={() => handleRecommend(application.applicant_id)}
-                      className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-blue-600"
+                      onClick={() => openModal(application)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                     >
-                      Recommend
-                    </button>
-                    <button
-                      onClick={() => handleDeny(application.applicant_id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                    >
-                      Deny
+                      View Application
                     </button>
                   </div>
                 </td>
@@ -133,6 +135,11 @@ const Committee = () => {
             ))}
           </tbody>
         </table>
+        {/* Modal */}
+        {isModalOpen && (
+            <ApplicationModal application={selectedApplication} onClose={closeModal} />
+        )}
+
       </div>
     </div>
   );

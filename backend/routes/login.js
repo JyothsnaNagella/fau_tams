@@ -9,6 +9,7 @@ const staff = require('../models/staff');
 const committee = require('../models/committee');
 const instructor = require('../models/instructor');
 
+
 // Login route
 router.post('/', async (req, res) => {
     console.log(req.body);
