@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer'); // To handle file uploads
 const verifyToken = require('../middleware/verifyToken'); 
+const allowedRoles = require('../middleware/allowedRoles');
 const Applicant = require('../models/applicant');
 const Application = require('../models/application');
 const Instructor = require('../models/instructor');
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.put('/accept/:id', (req, res) => {
+router.put('/accept/:id', verifyToken, allowedRoles('applicant'), (req, res) => {
   const applicationId = req.params.id;
   Application.acceptApplication(applicationId, (err, result) => {
     if (err) {
@@ -31,7 +32,7 @@ router.put('/accept/:id', (req, res) => {
   });
 }); 
 
-router.put('/deny/:id', (req, res) => {
+router.put('/deny/:id', verifyToken, allowedRoles('applicant'), (req, res) => {
   const applicationId = req.params.id;
   Application.denyApplication(applicationId, (err, result) => {
     if (err) {
@@ -42,7 +43,7 @@ router.put('/deny/:id', (req, res) => {
   });
 });
 
-router.get('/courses', (req, res) => {
+router.get('/courses', verifyToken, allowedRoles('applicant'), (req, res) => {
   Course.getAll((err, courses) => {
     if (err) return res.status(500).send('Error fetching courses');
     res.status(200).json(courses);
@@ -50,9 +51,8 @@ router.get('/courses', (req, res) => {
 });
 
 // Create application for an applicant
-router.post('/:id/apply', upload.single('cv'), (req, res) => {
+router.post('/:id/apply', upload.single('cv'), verifyToken, allowedRoles('applicant'), (req, res) => {
   const { id } = req.params;
-  console.log("Req params: ", req.params);
 
   // @TODO We need to first name, last name, znumber, email, and password from the user id
 
@@ -73,8 +73,6 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
       if (!result) return res.status(404).send('Instructor not found');
       
       const instructor_id = result.id;
-      console.log(instructor_id);
-      console.log("Applicant id: ", applicant);
 
       // Form data to insert
       const applicationData = {
@@ -110,7 +108,7 @@ router.post('/:id/apply', upload.single('cv'), (req, res) => {
 });
 
 
-router.get('/:id/applications', (req, res) => {
+router.get('/:id/applications', verifyToken, allowedRoles('applicant'), (req, res) => {
   const { id } = req.params;
   Application.getApplicationsByApplicantId(id, (err, result) => {
     if (err) return res.status(500).send('Error getting applications');
