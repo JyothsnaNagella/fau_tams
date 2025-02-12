@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axios';
 
+const basePath = process.env.REACT_APP_URL_PATH || '';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +35,7 @@ const Login = () => {
       localStorage.setItem('userId', user.id);
       setSuccess('Login successful! Redirecting...');
       setTimeout(() => {
-        window.location.href = '/dashboard'; // Redirect to dashboard
+        window.location.href = basePath+'/dashboard'; // Redirect to dashboard
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');

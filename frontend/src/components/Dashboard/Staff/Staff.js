@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import StaffNavigation from "./StaffNavigation";
 
+const basePath = process.env.REACT_APP_URL_PATH || '';
 const StaffDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`/dashboard/staff/applications`);
+    navigate(`${basePath}/dashboard/staff/applications`);
   }, []);
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">

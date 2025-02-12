@@ -20,53 +20,58 @@ import Departments from './components/Dashboard/Staff/Applications/Departments';
 /* Styles */
 import './App.css';
 
+const basePath = process.env.REACT_APP_URL_PATH || '';
+console.log("basePath: ", basePath);
 const App = () => {
   return (
       <Router>
           <Layout>
               <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+		<Route path={`${basePath}/`} element={<Login />} />
+		<Route path={`${basePath}/login`} element={<Login />} />
+		<Route path={`${basePath}/register`} element={<Register />} />
+                <Route path={basePath + "/"} element={<Login />} />
+                <Route path={basePath + "/login"} element={<Login />} />
+                <Route path={basePath + "/register"} element={<Register />} />
 
                 {/* Protected Route */}
                 <Route
-                path="/dashboard"
+                path={basePath + "/dashboard"}
                 element={<ProtectedRoute element={Dashboard} />}
                 />
 
                 <Route
-                path="/dashboard/staff/applications"
-                element={<ProtectedRoute element={Applications} />}
+                 path={basePath + "/dashboard/staff/applications"}
+		element={<ProtectedRoute element={Applications} />}
                 />
 
                 <Route
-                path="/dashboard/staff/courses"
+                path={basePath + "/dashboard/staff/courses"}
                 element={<ProtectedRoute element={Courses} />}
                 />
 
                 <Route
-                path="/dashboard/staff/instructors"
+                path={basePath + "/dashboard/staff/instructors"}
                 element={<ProtectedRoute element={Instructors} />}
                 />
 
                 <Route
-                path="/dashboard/staff/committee"
+                path={basePath + "/dashboard/staff/committee"}
                 element={<ProtectedRoute element={Committee} />}
                 />
 
                 <Route
-                path="/dashboard/staff/ApprovedApplications"
+                path={basePath + "/dashboard/staff/ApprovedApplications"}
                 element={<ProtectedRoute element={ApprovedApplications} />}
                 />
 
                 <Route
-                path="/dashboard/staff/Departments"
+                path={basePath + "/dashboard/staff/Departments"}
                 element={<ProtectedRoute element={Departments} />}      
                 />
                 
                 {/* Fallback route */}
-                <Route path="*" element={<Navigate to="/login" />} />
+                <Route path="*" element={<Navigate to={basePath + "/login"} />} />
 
               </Routes>
           </Layout>

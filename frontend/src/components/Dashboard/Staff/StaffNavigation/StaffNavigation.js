@@ -1,14 +1,14 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 
-
+const basePath = process.env.REACT_APP_URL_PATH || '';
 const StaffNavigation = () => {
     const navigate = useNavigate();
 
     const handleButtonClick = (type) => {
       console.log(`Button clicked: ${type}`);
       // Navigate to the corresponding page
-      navigate(`/dashboard/staff/${type}`);
+      navigate(`${basePath}/dashboard/staff/${type}`);
     };
   
   

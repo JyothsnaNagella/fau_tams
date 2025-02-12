@@ -44,6 +44,12 @@ app.use('/committee', committeeRoute);
 app.use('/instructor', instructorRoute);
 app.use('/staff', staffRoute);
 
+// Add a simple "hello world" route
+app.get('/hello', (req, res) => {
+  res.send('hello world');
+});
+
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

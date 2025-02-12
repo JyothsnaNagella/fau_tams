@@ -1,11 +1,12 @@
 import React, { } from 'react';
 
+const basePath = process.env.REACT_APP_URL_PATH || '';
 const Logout = () => {
   const jwtToken = localStorage.getItem('jwtToken');
 
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
-    window.location.href = '/';
+    window.location.href = basePath + '/';
   };
 
   return (
