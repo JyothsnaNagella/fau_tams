@@ -1,0 +1,18 @@
+server {
+    listen 80 default_server;
+    listen 443 ssl default_server;
+    server_name jlabs.network;
+
+    # SSL configuration (you can replace with your actual SSL certs)
+    ssl_certificate /etc/nginx/ssl/tls.crt;
+    ssl_certificate_key /etc/nginx/ssl/jlabs.network.key;
+
+    # Root directory for static website content
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Serve the main website at /
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
