@@ -14,9 +14,21 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      # React app for jlabs.network (/tams/)
       - ./frontend/build:/var/www/html/tams/build/:ro
+
+      # Static HTML for digid.network (/)
+      - ./nginx-docker/public_html:/var/www/html/digid:ro
+
+      # Nginx config files (jlabs.conf, digid.conf, etc.)
+      - ./nginx-docker/nginx-config:/etc/nginx/conf.d/:ro
+
+      # SSL certs (shared)
+      - ./nginx-docker/nginx-config/ssl:/etc/nginx/ssl:ro
+      - ./nginx-docker/nginx-config/ssl:/etc/ssl/digid:ro
+
     depends_on:
-      - backend
+      - node
     networks:
       - tams-network
 
@@ -34,7 +46,7 @@ services:
       - tams-network
 
   node:
-    build: ./backend 
+    build: ./backend
     image: node
     container_name: node
     restart: always

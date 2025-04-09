@@ -56,3 +56,4 @@ Configure backend/config/refresh.sql to easily rebuild and reseed db
 Jyothsna Nagella - 2024
 Test CI/CD trigger at Wed Apr  9 12:08:21 PM UTC 2025
 Triggered with Compose v2 🐳
+Triggering with system-wide Compose fix
