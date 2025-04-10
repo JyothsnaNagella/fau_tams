@@ -21,6 +21,7 @@ pipeline {
                 sh '''
                     cd fau_tams
                     docker compose down -v || true
+                    docker rm -f mysql || true
                 '''
             }
         }
