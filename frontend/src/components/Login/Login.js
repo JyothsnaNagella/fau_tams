@@ -48,6 +48,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
+      <h3>Welcome to TAMS, pipeline was successful! Congrats</h3>
       {/* Login Form */}
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md mt-4">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
