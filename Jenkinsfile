@@ -7,12 +7,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Clone Repo') {
             steps {
                 sh '''
                     rm -rf fau_tams
                     git clone -b ${BRANCH} ${GIT_REPO}
-                    cd fau_tams
                 '''
             }
         }
