@@ -1,43 +1,38 @@
-
 pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "tams" // Optional: for naming containers
+        GIT_REPO = 'https://github.com/JyothsnaNagella/fau_tams'
+        BRANCH = 'main'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git url: 'https://github.com/JyothsnaNagella/fau_tams', branch: 'main'
+                sh '''
+                    rm -rf fau_tams
+                    git clone -b ${BRANCH} ${GIT_REPO}
+                    cd fau_tams
+                '''
             }
         }
 
-        stage('Stop Old Containers') {
+        stage('Reset containers') {
             steps {
-                sh 'docker-compose down || true'
+                sh '''
+                    cd fau_tams
+                    docker compose down -v || true
+                '''
             }
         }
 
-        stage('Start New Containers') {
+        stage('Build & Start') {
             steps {
-                sh 'docker-compose up -d --build'
+                sh '''
+                    cd fau_tams
+                    docker compose -f docker-compose.yml up -d --build
+                '''
             }
-        }
-
-        stage('Check Running Containers') {
-            steps {
-                sh 'docker ps'
-            }
-        }
-    }
-
-    post {
-        failure {
-            echo 'Pipeline failed ❌'
-        }
-        success {
-            echo 'App deployed successfully ✅'
         }
     }
 }
