@@ -1,5 +1,5 @@
 # FAU Graduate Teaching Assistant Management System
-
+- JamesJ
 A robust system designed to streamline the management of graduate teaching assistants, providing tools for efficient application reviews, recommendations, and approvals.
 
 ## Features
