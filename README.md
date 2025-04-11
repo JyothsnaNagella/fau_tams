@@ -17,6 +17,7 @@ Ensure you have the following installed on your system:
 - [npm](https://www.npmjs.com/)
 - MySQL
 
+  
 ### Installation
 
 1. Clone the repository:
@@ -32,7 +33,7 @@ Ensure you have the following installed on your system:
    cd ../backend && npm i
    cp .env.example .env
    ```
-
+   
 ### Backend
 Start the backend server:
 ```
