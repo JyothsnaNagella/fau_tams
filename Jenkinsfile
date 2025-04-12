@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        CI = 'true' // Disable prompts and enable non-interactive npm mode
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -22,8 +26,14 @@ pipeline {
             steps {
                 echo 'Installing dependencies and building frontend...'
                 dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                    // Add logging for visibility and prevent hanging
+                    sh '''
+                        echo "Starting npm install..."
+                        npm install --no-audit --progress=false
+
+                        echo "Running npm build..."
+                        npm run build
+                    '''
                 }
             }
         }
@@ -39,6 +49,9 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs above.'
         }
     }
 }
