@@ -8,17 +8,30 @@ pipeline {
             }
         }
 
-        stage('Shutdown existing containers') {
+        stage('Clean Docker Artifacts') {
             steps {
-                echo 'Stopping any running containers...'
-                sh 'docker compose down || true'
+                echo 'Cleaning up old Docker images and containers...'
+                sh '''
+                    docker compose down --volumes --remove-orphans || true
+                    docker system prune -af || true
+                '''
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                echo 'Installing dependencies and building frontend...'
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
             }
         }
 
         stage('Build and Start Containers') {
             steps {
                 echo 'Building and starting containers...'
-                sh 'docker compose -f docker-compose.yml up -d --build'
+                sh 'docker compose up -d --build --no-cache'
             }
         }
     }
