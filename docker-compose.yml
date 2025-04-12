@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   tams-network:
     driver: bridge
@@ -31,6 +29,13 @@ services:
       - node
     networks:
       - tams-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
 
   mysql:
     image: mysql
