@@ -12,33 +12,40 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # React app for jlabs.network (/tams/)
-      - ./frontend/build:/var/www/html/tams/build/:ro
-
-      # Static HTML for digid.network (/)
       - ./nginx-docker/public_html:/var/www/html/digid:ro
-
-      # Nginx config files (jlabs.conf, digid.conf, etc.)
-      - ./nginx-docker/nginx-config:/etc/nginx/conf.d/:ro
-
-      # SSL certs (shared)
+      - ./nginx-docker/nginx-config:/etc/nginx/conf.d:ro
       - ./nginx-docker/nginx-config/ssl:/etc/nginx/ssl:ro
       - ./nginx-docker/nginx-config/ssl:/etc/ssl/digid:ro
-
-    depends_on:
-      - node
     networks:
       - tams-network
+    depends_on:
+      - frontend
+      - backend
 
   frontend:
     build:
       context: ./frontend
-    container_name: frontend
+    image: tams-frontend
+    container_name: tams-frontend
     ports:
       - "3000:80"
+    networks:
+      - tams-network
+
+  backend:
+    build: ./backend
+    image: tams-backend
+    container_name: tams-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+    networks:
+      - tams-network
 
   mysql:
-    image: mysql
+    image: mysql:5.7
     container_name: mysql
     restart: always
     command: --default-authentication-plugin=mysql_native_password
@@ -47,17 +54,5 @@ services:
       MYSQL_DATABASE: ta
     ports:
       - "3306:3306"
-    networks:
-      - tams-network
-
-  node:
-    build: ./backend
-    image: node
-    container_name: node
-    restart: always
-    ports:
-      - "5000:5000"
-    depends_on:
-      - mysql
     networks:
       - tams-network
