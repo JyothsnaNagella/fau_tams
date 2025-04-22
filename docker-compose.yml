@@ -4,7 +4,9 @@ networks:
 
 services:
   nginx:
-    build: ./nginx-docker
+    build:
+     context: .
+     dockerfile: nginx-docker/Dockerfile
     image: nginx-ssl
     container_name: nginx-ssl
     restart: always
@@ -19,23 +21,12 @@ services:
     networks:
       - tams-network
     depends_on:
-      - frontend
-      - backend
+      - node
 
-  frontend:
-    build:
-      context: ./frontend
-    image: tams-frontend
-    container_name: tams-frontend
-    ports:
-      - "3000:80"
-    networks:
-      - tams-network
-
-  backend:
+  node:
     build: ./backend
-    image: tams-backend
-    container_name: tams-backend
+    image: node
+    container_name: node
     restart: always
     ports:
       - "5000:5000"

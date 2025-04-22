@@ -1,23 +1,28 @@
+# --------------------------
+# Stage 1: Build frontend
+# --------------------------
+FROM node:18 AS builder
+
+WORKDIR /app
+COPY ../frontend/ ./
+RUN npm install && npm run build
+
+# --------------------------
+# Stage 2: NGINX serve
+# --------------------------
 FROM nginx:latest
 
-# Remove the default configuration
-RUN rm /etc/nginx/conf.d/default.conf
+# Remove default NGINX config
+RUN rm /etc/nginx/conf.d/default.conf || true
 
-# Copy your custom Nginx config
-COPY ./nginx-config/jlabs.network.conf /etc/nginx/conf.d/
+# Add custom NGINX config and SSL
+COPY ./nginx-docker/nginx-config/jlabs.network.conf /etc/nginx/conf.d/
+COPY ./nginx-docker/nginx-config/ssl/ /etc/nginx/ssl/
 
-# Copy SSL certificates (optional, if you have them locally)
-COPY ./nginx-config/ssl/ /etc/nginx/ssl/
+# ✅ Copy build output to the exact path expected by nginx.conf
+COPY --from=builder /app/build /var/www/html/tams/build
 
-#Delete the existing index file
-RUN rm /var/www/html/index.html || true
-
-# Copy index file 
-COPY ./index.html /var/www/html/
-
-
-# Web app frontend
-
-
-# Expose port 80 and 443
+# Expose ports
 EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]
