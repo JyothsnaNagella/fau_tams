@@ -51,7 +51,7 @@ npm run start
 Build databse from ta.sql in backend/config/ta.sql
 Seed database with sample data from backend/seeder/seeder_12-07-2024.sql
 
-Configure backend/config/refresh.sql to easily rebuild and reseed db
+Configured backend/config/refresh.sql to easily rebuild and reseed db
 
 ### Author
 Jyothsna Nagella - 2025
