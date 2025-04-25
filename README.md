@@ -54,7 +54,7 @@ Seed database with sample data from backend/seeder/seeder_12-07-2024.sql
 Configure backend/config/refresh.sql to easily rebuild and reseed db
 
 ### Author
-Jyothsna Nagella - 2024
+Jyothsna Nagella - 2025
 Test CI/CD trigger at Wed Apr  9 12:08:21 PM UTC 2025
 Triggered with Compose v2 🐳
 Triggering with system-wide Compose fix
