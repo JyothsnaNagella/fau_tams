@@ -44,7 +44,7 @@ node server.js
 Start the frontend application:
 
 ```
-npm run start
+npm run 
 ```
 
 ### Database
