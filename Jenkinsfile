@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_FILE_CUSTOM = 'docker-command-f.yml'
+        DOCKER_BUILDKIT = '1'
     }
 
     options {
         ansiColor('xterm')
-        timeout(time: 30, unit: 'MINUTES')
         timestamps()
+        timeout(time: 30, unit: 'MINUTES')
     }
 
     stages {
@@ -38,8 +38,10 @@ pipeline {
                     sh '''
                         echo Running npm ci (deterministic install)…
                         npm ci --no-audit --progress=false
+
                         echo Running production build (warnings only)…
-                        CI= npm run build
+                        export CI=true
+                        npm run build
                     '''
                 }
             }
@@ -47,18 +49,20 @@ pipeline {
 
         stage('Deploy Containers') {
             steps {
-                echo 'Rebuilding & recreating containers using custom compose file…'
-                sh 'docker compose -f $COMPOSE_FILE_CUSTOM up -d --build --force-recreate'
+                echo 'Rebuilding & recreating containers…'
+                sh '''
+                    docker compose -f docker-compose.yml up -d --build --force-recreate
+                '''
             }
         }
     }
 
     post {
-        failure {
-            echo 'Pipeline failed. Check logs above.'
-        }
         success {
-            echo 'Pipeline succeeded. 🎉'
+            echo '🎉 Deployment successful!'
+        }
+        failure {
+            echo '🚨 Pipeline failed. Check logs above.'
         }
     }
 }
