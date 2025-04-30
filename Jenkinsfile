@@ -1,57 +1,38 @@
 pipeline {
     agent any
 
-    environment {
-        CI = 'true' // Disable prompts and enable non-interactive npm mode
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Clean Docker Artifacts') {
-            steps {
-                echo 'Cleaning up old Docker images and containers...'
-                sh '''
-                    docker compose down --volumes --remove-orphans || true
-                    docker system prune -af || true
-                '''
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                echo 'Installing dependencies and building frontend...'
-                dir('frontend') {
-                    // Add logging for visibility and prevent hanging
-                    sh '''
-                        echo "Starting npm install..."
-                        npm install --no-audit --progress=false
-
-                        echo "Running npm build..."
-                        npm run build
-                    '''
+                dir('/opt/fau_tams') {
+                    git branch: 'main', url: 'https://github.com/JyothsnaNagella/fau_tams.git'
                 }
             }
         }
 
-        stage('Build and Start Containers') {
+        stage('Pull Latest Images') {
             steps {
-                echo 'Building and starting containers...'
-                sh 'docker compose up -d --build --no-cache'
+                dir('/opt/fau_tams') {
+                    sh 'docker compose -f docker-compose.yml pull'
+                }
+            }
+        }
+
+        stage('Rebuild & Deploy') {
+            steps {
+                dir('/opt/fau_tams') {
+                    sh 'docker compose -f docker-compose.yml up -d --build'
+                }
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline finished.'
+        success {
+            echo 'Deployment completed successfully!'
         }
         failure {
-            echo 'Pipeline failed. Check logs above.'
+            echo 'Deployment failed. Please check the logs.'
         }
     }
 }
