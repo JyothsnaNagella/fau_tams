@@ -1,56 +1,60 @@
 pipeline {
-    agent any
-
-    environment {
-        PROJECT_DIR = '/opt/fau_tams'
-        COMPOSE_FILE = 'docker-compose.yml'
-    }
-
-    stages {
-        stage('Checkout Code') {
-            steps {
-                dir("${env.PROJECT_DIR}") {
-                    git branch: 'main', url: 'https://github.com/JyothsnaNagella/fau_tams.git'
-                }
-            }
-        }
-
-        stage('Inject Secrets') {
-            steps {
-                withCredentials([string(credentialsId: 'jwt-secret', variable: 'JWT_SECRET')]) {
-                    dir("${env.PROJECT_DIR}") {
-                        sh '''
-                            echo "JWT_SECRET=${JWT_SECRET}" > .env
-                            echo ".env file created with JWT_SECRET"
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Pull Images') {
-            steps {
-                dir("${env.PROJECT_DIR}") {
-                    sh "docker compose -f ${COMPOSE_FILE} pull"
-                }
-            }
-        }
-
-        stage('Build & Deploy') {
-            steps {
-                dir("${env.PROJECT_DIR}") {
-                    sh "docker compose -f ${COMPOSE_FILE} up -d --build"
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deployment completed successfully!'
-        }
-        failure {
-            echo 'Deployment failed. Check logs and secrets.'
-        }
-    }
-}
+           agent any
+       
+           options {
+               ansiColor('xterm')             // nice colored logs
+               timestamps()                   // prepends each line with a timestamp
+               timeout(time: 30, unit: 'MINUTES') // fail if it hangs
+           }
+       
+          stages {
+              stage('Checkout') {
+                  steps {
+                      checkout scm
+                  }
+              }
+      
+              stage('Clean Docker Artifacts') {
+                  steps {
+                      echo 'Cleaning up old Docker images and containers…'
+                      sh '''
+                          docker compose down --volumes --remove-orphans || true
+                          docker system prune -af || true
+                      '''
+                  }
+              }
+      
+              stage('Build Frontend') {
+                  steps {
+                      echo 'Installing dependencies and building frontend…'
+                      dir('frontend') {
+                          sh '''
+                              echo "🔄 npm ci (deterministic install)…"
+                              npm ci --no-audit --progress=false
+      
+                              echo "Running production build (warnings only)…"
+                              CI='' npm run build
+                          '''
+                      }
+                  }
+              }
+      
+              stage('Deploy Containers') {
+                  steps {
+                      echo 'Rebuilding & recreating containers…'
+                      // --build picks up your new server.js & compose changes
+                      // --force-recreate ensures the node container gets the new DB_HOST
+                      sh 'docker compose up -d --build --force-recreate'
+                  }
+              }
+          }
+      
+          post {
+              always {
+                  echo 'Pipeline finished.'
+              }
+              failure {
+                  echo 'Pipeline failed. Check logs above.'
+              }
+          }
+      }
