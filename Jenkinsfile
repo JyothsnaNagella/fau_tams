@@ -20,12 +20,9 @@ pipeline {
 
         stage('Clean Docker Artifacts') {
             steps {
-                echo 'Cleaning up old Docker containers and images…'
+                echo 'Cleaning up old Docker images and containers…'
                 sh '''
                     docker compose down --volumes --remove-orphans || true
-                    docker rm -f mysql || true
-                    docker rm -f node || true
-                    docker rm -f nginx-ssl || true
                     docker system prune -af || true
                 '''
             }
@@ -36,12 +33,11 @@ pipeline {
                 echo 'Installing dependencies and building frontend…'
                 dir('frontend') {
                     sh '''
-                        echo Running npm ci (deterministic install)…
+                        echo 🔄 npm ci (deterministic install)…
                         npm ci --no-audit --progress=false
 
                         echo Running production build (warnings only)…
-                        export CI=true
-                        npm run build
+                        CI= npm run build
                     '''
                 }
             }
@@ -50,19 +46,22 @@ pipeline {
         stage('Deploy Containers') {
             steps {
                 echo 'Rebuilding & recreating containers…'
-                sh '''
-                    docker compose -f docker-compose.yml up -d --build --force-recreate
-                '''
+                withCredentials([string(credentialsId: 'jwt-secret-id', variable: 'JWT_SECRET')]) {
+                    sh '''
+                        echo Verifying JWT_SECRET: ****
+                        docker compose up -d --build --force-recreate
+                    '''
+                }
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Deployment successful!'
+            echo '🎉 Pipeline finished.'
         }
         failure {
-            echo '🚨 Pipeline failed. Check logs above.'
+            echo '❌ Pipeline failed. Check above for errors.'
         }
     }
 }
