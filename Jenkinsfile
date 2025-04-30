@@ -1,10 +1,14 @@
 pipeline {
     agent any
 
+    environment {
+        COMPOSE_FILE_CUSTOM = 'docker-command-f.yml'
+    }
+
     options {
-        ansiColor('xterm')                  // Colorized output
-        timestamps()                        // Timestamped logs
-        timeout(time: 30, unit: 'MINUTES')  // Auto-fail if it hangs
+        ansiColor('xterm')
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
     }
 
     stages {
@@ -16,17 +20,12 @@ pipeline {
 
         stage('Clean Docker Artifacts') {
             steps {
-                echo 'Cleaning up old Docker images and containers…'
+                echo 'Cleaning up old Docker containers and images…'
                 sh '''
-                    # Tear down compose stack, remove volumes and orphans
                     docker compose down --volumes --remove-orphans || true
-
-                    # Explicitly force remove lingering containers that could conflict
                     docker rm -f mysql || true
                     docker rm -f node || true
-                    docker rm -f nginx || true
-
-                    # Reclaim disk space
+                    docker rm -f nginx-ssl || true
                     docker system prune -af || true
                 '''
             }
@@ -37,11 +36,10 @@ pipeline {
                 echo 'Installing dependencies and building frontend…'
                 dir('frontend') {
                     sh '''
-                        echo "Running npm ci (deterministic install)…"
+                        echo Running npm ci (deterministic install)…
                         npm ci --no-audit --progress=false
-
-                        echo "Running production build (warnings only)…"
-                        CI='' npm run build
+                        echo Running production build (warnings only)…
+                        CI= npm run build
                     '''
                 }
             }
@@ -49,21 +47,18 @@ pipeline {
 
         stage('Deploy Containers') {
             steps {
-                echo 'Rebuilding & recreating containers…'
-                sh '''
-                    docker compose up -d --build --force-recreate
-                '''
+                echo 'Rebuilding & recreating containers using custom compose file…'
+                sh 'docker compose -f $COMPOSE_FILE_CUSTOM up -d --build --force-recreate'
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline finished.'
-        }
         failure {
             echo 'Pipeline failed. Check logs above.'
         }
+        success {
+            echo 'Pipeline succeeded. 🎉'
+        }
     }
 }
-
