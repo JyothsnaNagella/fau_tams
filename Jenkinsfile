@@ -20,8 +20,9 @@ pipeline {
 
         stage('Clean Docker Artifacts') {
             steps {
-                echo 'Cleaning up old Docker images and containers…'
+                echo '🧹 Cleaning up old Docker images and containers…'
                 sh '''
+                    #!/bin/bash
                     docker compose down --volumes --remove-orphans || true
                     docker system prune -af || true
                 '''
@@ -30,13 +31,14 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                echo 'Installing dependencies and building frontend…'
+                echo '📦 Installing dependencies and building frontend…'
                 dir('frontend') {
                     sh '''
-                        echo 🔄 npm ci (deterministic install)…
+                        #!/bin/bash
+                        echo "🔄 npm ci (deterministic install)…"
                         npm ci --no-audit --progress=false
 
-                        echo Running production build (warnings only)…
+                        echo "🚧 Running production build (warnings only)…"
                         CI= npm run build
                     '''
                 }
@@ -45,23 +47,25 @@ pipeline {
 
         stage('Deploy Containers') {
             steps {
-                echo 'Rebuilding & recreating containers…'
-                withCredentials([string(credentialsId: 'jwt-secret-id', variable: 'JWT_SECRET')]) {
-                    sh '''
-                        echo Verifying JWT_SECRET: ****
-                        docker compose up -d --build --force-recreate
-                    '''
-                }
+                echo '🚀 Rebuilding & recreating containers…'
+                sh '''
+                    #!/bin/bash
+                    docker compose up -d --build --force-recreate
+                '''
             }
         }
     }
 
     post {
         success {
-            echo '🎉 Pipeline finished.'
+            echo '✅ Pipeline completed successfully.'
         }
         failure {
             echo '❌ Pipeline failed. Check above for errors.'
         }
+        always {
+            echo '🔁 Pipeline finished.'
+        }
     }
 }
+
